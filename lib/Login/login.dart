@@ -41,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
       'password': pass
     };
     /*var jsonResponse = null;*/
-    var response = await http.post("${url}/CekLogin?", body: data);
+    var response = await http.post("${url}/CekLoginDFA?", body: data);
     if(response.statusCode == 200) {
       /*jsonResponse = json.decode(response.body)['Table'];*/
       _list = (json.decode(response.body)['Table'] as List)
@@ -168,12 +168,12 @@ class _LoginPageState extends State<LoginPage> {
                 },
                 cursorColor: Colors.lightBlue,
                 decoration: InputDecoration(
-                    hintText: "Email",
+                    hintText: "Username",
                     prefixIcon: Material(
                       elevation: 0,
                       borderRadius: BorderRadius.all(Radius.circular(30)),
                       child: Icon(
-                        Icons.email,
+                        Icons.person,
                         color: Colors.blue,
                       ),
                     ),

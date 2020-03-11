@@ -1,5 +1,6 @@
 import 'package:mobiledfa/Scheduling/schedulingcontroller.dart';
 import 'package:mobiledfa/Scheduling/schedulingmodel.dart';
+import 'package:mobiledfa/Task/taskcontroller.dart';
 
 import 'Login/login.dart';
 import 'package:mobiledfa/Scheduling/scheduling.dart';
@@ -68,7 +69,8 @@ class _MyDrawer extends State<MyDrawer> {
               ],
               onSelected: (int value){
                 if(value == 1) {
-                  Default();
+                  DefaultSch();
+                  DefaultTask();
                   Navigator.push(context, MaterialPageRoute(
                       builder: (context) => LoginPage()));
                 }

@@ -1,4 +1,4 @@
-import 'package:mobiledfa/Task/document.dart';
+import 'package:mobiledfa/Task/acreceive.dart';
 import 'taskmodel.dart';
 import 'taskcontroller.dart';
 import '../services.dart';
@@ -24,21 +24,23 @@ var yearComboBox = new DateFormat("yyyy").format(now);
 final numformat = new NumberFormat("#,###");
 bool isFilter = false;
 
-class Task extends StatefulWidget {
+class Document extends StatefulWidget {
   String nik;
   String scheduling;
+  String namaToko;
 
-  Task({Key key, @required this.nik, @required this.scheduling});
+  Document({Key key, @required this.nik, @required this.scheduling, @required this.namaToko});
 
   @override
-  _Task createState() => _Task(nik: nik, scheduling: scheduling);
+  _Document createState() => _Document(nik: nik, scheduling: scheduling, namaToko: namaToko);
 }
 
-class _Task extends State<Task> {
+class _Document extends State<Document> {
   String nik;
   String scheduling;
+  String namaToko;
 
-  _Task({Key key, @required this.nik, @required this.scheduling});
+  _Document({Key key, @required this.nik, @required this.scheduling, @required this.namaToko});
 
   bool loading = false;
   bool firstload;
@@ -71,7 +73,7 @@ class _Task extends State<Task> {
     await Future.delayed(Duration(seconds: 2));
 
     setState(() {
-      fetchDataTask(scheduling);
+      fetchDataDoc(scheduling, namaToko);
       loading = false;
     });
 
@@ -109,7 +111,7 @@ class _Task extends State<Task> {
                   elevation: 1.0,
                   highlightElevation: 1.0,
                   onPressed: () { Navigator.push(context, MaterialPageRoute(
-                      builder: (context) => Document(nik: nik, scheduling: listTask[i].sch_name, namaToko: listTask[i].nama_toko)),); },
+                      builder: (context) => SKUReceive(nik: nik, scheduling: listDocument[i].sch_name, buktiDokumen: listDocument[i].no_doc)),); },
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
@@ -119,7 +121,7 @@ class _Task extends State<Task> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        listTask[i].nama_toko,
+                        listDocument[i].no_doc,
                         textAlign: TextAlign.center,
                         maxLines: 3,
                         style: TextStyle(fontWeight: FontWeight.bold),),

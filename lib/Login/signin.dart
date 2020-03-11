@@ -41,7 +41,7 @@ class _LoginPageState extends State<SignIn> {
       'password': pass
     };
     /*var jsonResponse = null;*/
-    var response = await http.post("${url}/CekLogin?", body: data);
+    var response = await http.post("${url}/CekLoginDFA?", body: data);
     if(response.statusCode == 200) {
       /*jsonResponse = json.decode(response.body)['Table'];*/
       _list = (json.decode(response.body)['Table'] as List)
