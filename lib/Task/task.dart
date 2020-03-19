@@ -9,20 +9,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:fl_animated_linechart/fl_animated_linechart.dart';
-import 'package:percent_indicator/percent_indicator.dart';
-import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
-import 'package:intl/intl.dart';
-
-var now = new DateTime.now();
-var year = now.year;
-var month = now.month < 10 ? '0' + now.month.toString() : now.month.toString();
-var monthFormat = new DateFormat("MMMM").format(now);
-var yearFormat = new DateFormat("yyyy").format(now);
-var monthComboBox = new DateFormat("MMMM").format(now);
-var yearComboBox = new DateFormat("yyyy").format(now);
-final numformat = new NumberFormat("#,###");
-bool isFilter = false;
 
 class Task extends StatefulWidget {
   String nik;
@@ -41,12 +27,7 @@ class _Task extends State<Task> {
   _Task({Key key, @required this.nik, @required this.scheduling});
 
   bool loading = false;
-  bool firstload;
   var refreshKey = GlobalKey<RefreshIndicatorState>();
-  String periode = 'O${year}${month}';
-  bool isLoaded = false;
-  Color darkBlue = Color(0xff071d40);
-  Icon actionIcon = new Icon(Icons.search);
 
   @override
   void initState() {
@@ -55,13 +36,12 @@ class _Task extends State<Task> {
     setState(() {
       loading = true;
       refreshList();
-      new Timer.periodic(Duration(seconds: 20),  (Timer firstTime) =>
+      new Timer.periodic(Duration(seconds: 3),  (Timer firstTime) =>
           setState((){
             refreshList();
             firstTime.cancel();
           })
       );
-      new Timer.periodic(Duration(seconds: 300),  (Timer t) => setState((){refreshList();}));
     });
 
   }
@@ -82,7 +62,7 @@ class _Task extends State<Task> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: new AppBar(
-        title: Text('List Task',
+        title: Text('List Toko',
           style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),),
         flexibleSpace: new Container(
           decoration: BoxDecoration(
@@ -103,7 +83,7 @@ class _Task extends State<Task> {
             itemCount: listTask.length,
             itemBuilder: (context, i) {
               return Container(
-                margin: EdgeInsets.all(8.0),
+                margin: EdgeInsets.only(bottom: 10),
                 height: 60,
                 child: MaterialButton(
                   elevation: 1.0,

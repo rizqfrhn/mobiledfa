@@ -8,20 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:intl/intl.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/services.dart';
-
-var now = new DateTime.now();
-var year = now.year;
-var month = now.month < 10 ? '0' + now.month.toString() : now.month.toString();
-var dateFormat = new DateFormat("dd").format(now);
-var monthFormat = new DateFormat("MMMM").format(now);
-var yearFormat = new DateFormat("yyyy").format(now);
-var monthComboBox = new DateFormat("MMMM").format(now);
-var yearComboBox = new DateFormat("yyyy").format(now);
-final numformat = new NumberFormat("#,###");
-bool isFilter = false;
 
 class SKUReceive extends StatefulWidget {
   String nik;
@@ -43,14 +30,9 @@ class _SKUReceive extends State<SKUReceive> {
 
   final _formKey = GlobalKey<FormState>();
   bool loading = false;
-  bool firstload;
   var refreshKey = GlobalKey<RefreshIndicatorState>();
-  String periode = 'O${year}${month}';
   int _sortColumnIndex;
   bool _sortAscending = true;
-  bool isLoaded = false;
-  Color darkBlue = Color(0xff071d40);
-  Icon actionIcon = new Icon(Icons.search);
 
   void sort<T>(Comparable<T> getField(SKUModel d), bool ascending) {
     listSKU.sort((SKUModel a, SKUModel b) {
@@ -81,13 +63,12 @@ class _SKUReceive extends State<SKUReceive> {
     setState(() {
       loading = true;
       refreshList();
-      new Timer.periodic(Duration(seconds: 10),  (Timer firstTime) =>
+      new Timer.periodic(Duration(seconds: 3),  (Timer firstTime) =>
           setState((){
             refreshList();
             firstTime.cancel();
           })
       );
-      /*new Timer.periodic(Duration(seconds: 300),  (Timer t) => setState((){refreshList();}));*/
     });
   }
 
@@ -126,7 +107,7 @@ class _SKUReceive extends State<SKUReceive> {
           key: _formKey,
           child: Scrollbar(
             child: ListView(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
               children: <Widget>[
                 dataSKU(),
                 SizedBox(height: 10.0),
@@ -161,11 +142,12 @@ class _SKUReceive extends State<SKUReceive> {
         ],
       ),
       child: DataTable(
+        columnSpacing: 10,
         sortColumnIndex: _sortColumnIndex,
         sortAscending: _sortAscending,
         columns: [
           DataColumn(
-              label: Text("Nama Barang"),
+              label: Text("Barang"),
               numeric: false,
               onSort: (int columnIndex, bool ascending) =>
                   _sort<String>(
@@ -178,6 +160,13 @@ class _SKUReceive extends State<SKUReceive> {
                   _sort<num>(
                           (SKUModel d) => d.qty_doc, columnIndex,
                       ascending),),
+          DataColumn(
+            label: Text("Terima"),
+            numeric: false,
+            onSort: (int columnIndex, bool ascending) =>
+                _sort<num>(
+                        (SKUModel d) => d.qty_act, columnIndex,
+                    ascending),),
           DataColumn(
             label: Text("Remarks"),
             numeric: false,
@@ -196,7 +185,7 @@ class _SKUReceive extends State<SKUReceive> {
               },*/
               cells: [
                 DataCell(
-                  Container(child: Text('${listsku.nama_barang}'), width: MediaQuery.of(context).size.width * 0.21),
+                  Container(child: Text('${listsku.nama_barang}'), width: MediaQuery.of(context).size.width * 0.20),
                 ),
                 DataCell(
                   Container(child: Text('${listsku.qty_doc}'), width: MediaQuery.of(context).size.width * 0.15),
@@ -212,6 +201,26 @@ class _SKUReceive extends State<SKUReceive> {
                         keyboardType: TextInputType.number,
                         onChanged: (value){
                           setState(() {
+                            listsku.qty_act = double.parse(value);
+                          });
+                        },
+                        style: TextStyle(
+                          color: Colors.black,
+                        ),
+                        decoration: InputDecoration(
+                            hintText: 'Qty',
+                            border: InputBorder.none
+                        ),
+                      ),
+                      width: MediaQuery.of(context).size.width * 0.15
+                  ),
+                ),
+                DataCell(
+                  Container(
+                      child: TextFormField(
+                        initialValue: listsku.reasson,
+                        onChanged: (value){
+                          setState(() {
                             listsku.reasson = value;
                           });
                         },
@@ -219,14 +228,14 @@ class _SKUReceive extends State<SKUReceive> {
                           color: Colors.black,
                         ),
                         decoration: InputDecoration(
-                            hintText: 'Add a Remark...',
+                            hintText: 'Add a Remark',
                             border: InputBorder.none
                         ),
                       ),
-                      width: MediaQuery.of(context).size.width * 0.25
+                      width: MediaQuery.of(context).size.width * 0.30
                   ),
                 ),
-              ]),
+              ])
         ).toList(),
       ),
     );

@@ -1,5 +1,3 @@
-//Task
-
 class TaskModel {
   final double nomor;
   final String sch_name;
@@ -7,7 +5,7 @@ class TaskModel {
   final String driver_name;
   final String id_toko;
   final String nama_toko;
-  String urutan;
+  final String urutan;
   final String lat;
   final String lng;
 

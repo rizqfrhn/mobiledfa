@@ -3,8 +3,7 @@ import 'main.dart';
 //import 'Login/loginauth.dart';
 import 'Login/signin.dart';
 import 'Login/login.dart';
-import 'Scheduling/scheduling.dart';
-import 'drawer.dart';
+import 'General/drawer.dart';
 /*import 'UI/omsetarea.dart';*/
 
 class RouteGenerator {
@@ -27,15 +26,6 @@ class RouteGenerator {
             position: args.position,
             nik: args.nik,
           ),
-        );
-        break;
-
-      case '/omset':
-        final Scheduling args = settings.arguments;
-        return MaterialPageRoute(
-            builder: (_) => Scheduling(
-              nik: args.nik,
-            )
         );
         break;
 

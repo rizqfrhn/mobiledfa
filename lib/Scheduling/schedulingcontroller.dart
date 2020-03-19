@@ -24,8 +24,6 @@ class FlutterMoneyFormatter {
     return '$compacted';
   }
 }
-
-List<SchedulingModel> list = [];
 List<SequenceModel> listSeq = [];
 /*List<SchedulingDetailModel> listSequence = [];*/
 bool loading = false;
@@ -35,25 +33,7 @@ int monthChart = now.month;
 int yearChart = now.year;
 
 DefaultSch() {
-  list.clear();
   listSeq.clear();
-}
-
-fetchDataSch(String nik) async {
-  Map dataSch = {
-    'nik': nik,
-    'scheduling': ''
-  };
-
-  var responseSch =
-  await http.post(
-      '${url}/GetHeaderDFA?',
-      body: dataSch);
-  if (responseSch.statusCode == 200) {
-    list = (json.decode(responseSch.body)['Table'] as List)
-        .map((data) => new SchedulingModel.fromJson(data))
-        .toList();
-  }
 }
 
 //SEQUENCE

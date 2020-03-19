@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/services.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 
 class FlutterMoneyFormatter {
   FlutterMoneyFormatter({@required this.amount,}){}

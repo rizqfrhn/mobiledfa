@@ -13,15 +13,9 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/services.dart';
 
 var now = new DateTime.now();
-var year = now.year;
-var month = now.month < 10 ? '0' + now.month.toString() : now.month.toString();
 var dateFormat = new DateFormat("dd").format(now);
 var monthFormat = new DateFormat("MMMM").format(now);
 var yearFormat = new DateFormat("yyyy").format(now);
-var monthComboBox = new DateFormat("MMMM").format(now);
-var yearComboBox = new DateFormat("yyyy").format(now);
-final numformat = new NumberFormat("#,###");
-bool isFilter = false;
 
 class Sequence extends StatefulWidget {
   String nik;
@@ -43,14 +37,9 @@ class _Sequence extends State<Sequence> {
 
   final _formKey = GlobalKey<FormState>();
   bool loading = false;
-  bool firstload;
   var refreshKey = GlobalKey<RefreshIndicatorState>();
-  String periode = 'O${year}${month}';
   int _sortColumnIndex;
   bool _sortAscending = true;
-  bool isLoaded = false;
-  Color darkBlue = Color(0xff071d40);
-  Icon actionIcon = new Icon(Icons.search);
 
   void sort<T>(Comparable<T> getField(SequenceModel d), bool ascending) {
     listSeq.sort((SequenceModel a, SequenceModel b) {
@@ -75,17 +64,16 @@ class _Sequence extends State<Sequence> {
   }
 
   saveSeq(String json) async {
-    Map data = {
-      'data': json
+    Map dataJson = {
+      'myjson': json
     };
-    /*var jsonResponse = null;*/
-    var response = await http.post("${url}/UpdateSeq?", body: data);
+    var response = await http.post('${url}/updateSchedulingSopirOrange?', body: dataJson);
     if(response.statusCode == 200) {
       setState(() {
         loading = false;
         Flushbar(
           icon: Icon(Icons.check_circle_outline, color: Colors.green),
-          message: 'Success! Your data has been sent successfully.',
+          message: 'Success!',
           duration: Duration(seconds: 3),
         )..show(context);
       });
@@ -94,7 +82,7 @@ class _Sequence extends State<Sequence> {
         loading = false;
         Flushbar(
           icon: Icon(Icons.highlight_off, color: Colors.red),
-          message: 'Failed! A problem has been occurred while submitting your data.',
+          message: 'Failed!',
           duration: Duration(seconds: 3),
         )..show(context);
       });
@@ -108,13 +96,12 @@ class _Sequence extends State<Sequence> {
     setState(() {
       loading = true;
       refreshList();
-      new Timer.periodic(Duration(seconds: 10),  (Timer firstTime) =>
+      new Timer.periodic(Duration(seconds: 3),  (Timer firstTime) =>
           setState((){
             refreshList();
             firstTime.cancel();
           })
       );
-      /*new Timer.periodic(Duration(seconds: 300),  (Timer t) => setState((){refreshList();}));*/
     });
   }
 
@@ -164,7 +151,7 @@ class _Sequence extends State<Sequence> {
           key: _formKey,
           child: Scrollbar(
             child: ListView(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
               children: <Widget>[
                 dataSopir(),
                 SizedBox(height: 10.0),
@@ -174,8 +161,6 @@ class _Sequence extends State<Sequence> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     btnUpload(),
-                    SizedBox(width: 10.0),
-                    btnSave(),
                   ],
                 )
               ],
@@ -254,11 +239,12 @@ class _Sequence extends State<Sequence> {
         ],
       ),
       child: DataTable(
+        columnSpacing: 10,
         sortColumnIndex: _sortColumnIndex,
         sortAscending: _sortAscending,
         columns: [
           DataColumn(
-              label: Text("Nama Toko"),
+              label: Text("Toko"),
               numeric: false,
               onSort: (int columnIndex, bool ascending) =>
                   _sort<String>(
@@ -282,11 +268,17 @@ class _Sequence extends State<Sequence> {
               },*/
               cells: [
                 DataCell(
-                  Container(child: Text('${listseq.nama_toko}'), width: MediaQuery.of(context).size.width * 0.36),
+                  Container(child: Text('${listseq.nama_toko}'), width: MediaQuery.of(context).size.width * 0.5),
                 ),
                 DataCell(
                   Container(
                       child: TextFormField(
+                        validator: (value) {
+                          if (value.isEmpty || value == "0") {
+                            return 'Urutan harus diisi atau belum sesuai!';
+                          }
+                          return null;
+                        },
                         initialValue: listseq.urutan,
                         inputFormatters: [
                           WhitelistingTextInputFormatter.digitsOnly,
@@ -307,7 +299,7 @@ class _Sequence extends State<Sequence> {
                             border: InputBorder.none
                         ),
                       ),
-                      width: MediaQuery.of(context).size.width * 0.40
+                      width: MediaQuery.of(context).size.width * 0.3
                   ),
                 ),
               ]),
@@ -316,44 +308,20 @@ class _Sequence extends State<Sequence> {
     );
   }
 
-  Widget btnSave() {
-    return Container(
-      height: 50.0,
-      /*padding: EdgeInsets.symmetric(horizontal: 5.0),*/
-      child: RaisedButton(
-        onPressed: () {
-          setState(() {
-            loading = true;
-          });
-          /*saveSeq('');*/
-        },//since this is only a UI app
-        child: Text('Save',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        color: Colors.blue,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5)
-        ),
-      ),
-    );
-  }
-
   Widget btnUpload() {
     return Container(
       height: 50.0,
+      width: MediaQuery.of(context).size.width * 0.3,
       /*padding: EdgeInsets.symmetric(horizontal: 5.0),*/
       child: RaisedButton(
         onPressed: () {
           setState(() {
-            loading = true;
+            if (_formKey.currentState.validate()) {
+              // If the form is valid.
+              String jsonDetail = jsonEncode(listSeq);
+              saveSeq(jsonDetail);
+            }
           });
-          String jsonDetail = jsonEncode(listSeq);
-          print(jsonDetail);
         },//since this is only a UI app
         child: Text('Upload',
           style: TextStyle(
