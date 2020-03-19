@@ -12,6 +12,11 @@
         android:label="Mobile DFA"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true">
+
+        <!-- Add the following entry, with your API key -->
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyB2NxIbwMNyqRfNfo_VMlxLWs_-s1e8sdE"/>
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
