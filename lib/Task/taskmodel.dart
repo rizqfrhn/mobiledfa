@@ -67,14 +67,14 @@ class DocumentModel {
 }
 
 class SKUModel {
-  final double nomor;
-  final String sch_name;
-  final String plat_no;
-  final String driver_name;
-  final String id_toko;
-  final String nama_toko;
-  final String no_doc;
-  final String nama_barang;
+  double nomor;
+  String sch_name;
+  String plat_no;
+  String driver_name;
+  String id_toko;
+  String nama_toko;
+  String no_doc;
+  String nama_barang;
   double qty_doc;
   double qty_act;
   String reasson;
@@ -106,4 +106,15 @@ class SKUModel {
       reasson: json['reasson'] == null ? '' : json['reasson'],
     );
   }
+
+  Map toMap() => {
+    "sch_name": sch_name,
+    "driver_name": driver_name,
+    "id_toko": id_toko,
+    "no_doc": no_doc,
+    "nama_barang": nama_barang,
+    "qty_doc": qty_doc,
+    "qty_act": qty_act,
+    "reasson": reasson,
+  };
 }

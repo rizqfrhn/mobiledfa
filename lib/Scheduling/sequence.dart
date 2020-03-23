@@ -1,6 +1,6 @@
 import 'schedulingmodel.dart';
 import 'schedulingcontroller.dart';
-import '../services.dart';
+import '../Services/services.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
@@ -104,17 +104,6 @@ class _Sequence extends State<Sequence> {
       );
     });
   }
-
-  /*updateSeq(SchedulingDetailModel schDetail) async {
-    setState(() {
-      for (SchedulingDetailModel seq in listSequence) {
-        if (schDetail.nama_toko == seq.nama_toko) {
-          listSequence.remove(schDetail);
-        }
-        listSequence.add(schDetail);
-      }
-    });
-  }*/
 
   Future<Null> refreshList() async {
     refreshKey.currentState?.show(atTop: false);

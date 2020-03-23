@@ -1,6 +1,7 @@
 import 'taskmodel.dart';
 import 'taskcontroller.dart';
-import '../services.dart';
+import '../Services/services.dart';
+import '../Services/dbhelper.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
@@ -33,9 +34,11 @@ class _SKUReceive extends State<SKUReceive> {
   var refreshKey = GlobalKey<RefreshIndicatorState>();
   int _sortColumnIndex;
   bool _sortAscending = true;
+  DBHelper dbHelper;
+  List<SKUModel> skuDetail = [];
 
   void sort<T>(Comparable<T> getField(SKUModel d), bool ascending) {
-    listSKU.sort((SKUModel a, SKUModel b) {
+    skuDetail.sort((SKUModel a, SKUModel b) {
       if (!ascending) {
         final SKUModel c = a;
         a = b;
@@ -62,6 +65,7 @@ class _SKUReceive extends State<SKUReceive> {
     super.initState();
     setState(() {
       loading = true;
+      dbHelper = DBHelper();
       refreshList();
       new Timer.periodic(Duration(seconds: 3),  (Timer firstTime) =>
           setState((){
@@ -75,13 +79,49 @@ class _SKUReceive extends State<SKUReceive> {
   Future<Null> refreshList() async {
     refreshKey.currentState?.show(atTop: false);
     await Future.delayed(Duration(seconds: 2));
-
-    setState(() {
+    List<SKUModel> _results = await dbHelper.getSKU(scheduling, buktiDokumen);
+    if (_results.length > 0)
+    {
+      skuDetail = await dbHelper.getSKU(scheduling, buktiDokumen);
+    } else {
       fetchDataSKU(scheduling, buktiDokumen);
-      loading = false;
-    });
+      for (var i in listSKU) {
+        SKUModel item = SKUModel(
+          sch_name: scheduling,
+          driver_name: i.driver_name,
+          id_toko: i.id_toko,
+          no_doc: buktiDokumen,
+          nama_barang : i.nama_barang,
+          qty_doc : i.qty_doc,
+          qty_act : i.qty_act,
+          reasson : i.reasson,
+        );
+        dbHelper.save(item);
+      }
+      skuDetail = await dbHelper.getSKU(scheduling, buktiDokumen);
+    }
+    loading = false;
 
     return null;
+  }
+
+  updateSeq() async {
+    setState(() {
+      for (var i in skuDetail) {
+        SKUModel item = SKUModel(
+          sch_name: scheduling,
+          driver_name: i.driver_name,
+          id_toko: i.id_toko,
+          no_doc: buktiDokumen,
+          nama_barang : i.nama_barang,
+          qty_doc : i.qty_doc,
+          qty_act : i.qty_act,
+          reasson : i.reasson,
+        );
+        dbHelper.update(item);
+      }
+      refreshList();
+    });
   }
 
   @override
@@ -175,7 +215,7 @@ class _SKUReceive extends State<SKUReceive> {
                         (SKUModel d) => d.reasson, columnIndex,
                     ascending),),
         ],
-        rows: listSKU
+        rows: skuDetail
             .map(
               (listsku) => DataRow(
             /*selected: selectedUsers.contains(user),
@@ -193,10 +233,10 @@ class _SKUReceive extends State<SKUReceive> {
                 DataCell(
                   Container(
                       child: TextFormField(
-                        initialValue: listsku.reasson,
+                        initialValue: listsku.qty_act.toString(),
                         inputFormatters: [
                           WhitelistingTextInputFormatter.digitsOnly,
-                          LengthLimitingTextInputFormatter(3),
+                          LengthLimitingTextInputFormatter(6),
                         ],
                         keyboardType: TextInputType.number,
                         onChanged: (value){
@@ -250,7 +290,7 @@ class _SKUReceive extends State<SKUReceive> {
           setState(() {
             loading = true;
           });
-          /*saveSeq('');*/
+          updateSeq();
         },//since this is only a UI app
         child: Text('Save',
           style: TextStyle(
@@ -277,7 +317,7 @@ class _SKUReceive extends State<SKUReceive> {
           setState(() {
             loading = true;
           });
-          String jsonDetail = jsonEncode(listSKU);
+          String jsonDetail = jsonEncode(skuDetail);
           print(jsonDetail);
         },//since this is only a UI app
         child: Text('Upload',
