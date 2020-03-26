@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'General/drawer.dart';
 import 'package:mobiledfa/routes.dart';
+import 'Services/dbhelper.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await DBHelper().initDatabase();
   Color darkBlue = Color(0xff071d40);
   runApp(
       MaterialApp(

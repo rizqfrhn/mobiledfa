@@ -1,41 +1,59 @@
 import 'dart:async';
-import 'dart:io' as io;
+import 'dart:io';
 import 'package:mobiledfa/Task/taskmodel.dart';
 import 'package:sqflite/sqflite.dart';
-import 'dart:io' as io;
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
+Database db;
+
 class DBHelper {
-  static Database _db;
-  Future<Database> get db async {
-    if (_db != null) {
-      return _db;
+  void databaseLog(String functionName, String sql,
+      [List<Map<String, dynamic>> selectQueryResult, int insertAndUpdateQueryResult, List<dynamic> params]) {
+    print(functionName);
+    print(sql);
+    if (params != null) {
+      print(params);
     }
-    _db = await initDatabase();
-    return _db;
+    if (selectQueryResult != null) {
+      print(selectQueryResult);
+    } else if (insertAndUpdateQueryResult != null) {
+      print(insertAndUpdateQueryResult);
+    }
   }
 
-  initDatabase() async {
-    io.Directory documentDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentDirectory.path, 'SKUDetail.db');
-    var db = await openDatabase(path, version: 1, onCreate: _onCreate);
-    return db;
+  Future<String> getDatabasePath(String dbName) async {
+    final databasePath = await getDatabasesPath();
+    final path = join(databasePath, dbName);
+
+    //make sure the folder exists
+    if (await Directory(dirname(path)).exists()) {
+      //await deleteDatabase(path);
+    } else {
+      await Directory(dirname(path)).create(recursive: true);
+    }
+    return path;
   }
 
-  _onCreate(Database db, int version) async {
+  Future<void> initDatabase() async {
+    final path = await getDatabasePath('SKUDetail.db');
+    db = await openDatabase(path, version: 1, onCreate: _onCreate);
+    print(db);
+  }
+
+  Future<void> _onCreate(Database db, int version) async {
     await db.execute('CREATE TABLE SKUDetail ('
-        'sch_name STRING, '
-        'driver_name STRING, '
-        'id_toko STRING, '
-        'no_doc STRING, '
-        'nama_barang STRING, '
+        'sch_name TEXT, '
+        'driver_name TEXT, '
+        'id_toko TEXT, '
+        'no_doc TEXT, '
+        'nama_barang TEXT, '
         'qty_doc INTEGER, '
         'qty_act INTEGER, '
-        'reasson STRING)');
+        'reasson TEXT)');
   }
 
-  Future<int> save(SKUModel skuDetail) async {
+  Future<void> save(SKUModel skuDetail) async {
     var dbClient = await db;
     var result = await dbClient.insert('SKUDetail', skuDetail.toMap());
     return result;
@@ -54,6 +72,15 @@ class DBHelper {
       }
     }
     return skuDetail;
+    /*final sql = '''SELECT * FROM SKUDetail
+    WHERE sch_name = ${scheduling} AND no_doc = ${buktiDokumen}''';
+    final data = await db.rawQuery(sql);
+    List<SKUModel> skuDetail = [];
+    for (final node in data) {
+      final todo = SKUModel.fromJson(node);
+      skuDetail.add(todo);
+    }
+    return skuDetail;*/
   }
 
   /*Future<int> delete(String schName) async {
@@ -61,12 +88,13 @@ class DBHelper {
     return await dbClient.rawDelete('DELETE FROM SKUDetail WHERE sch_name = $schName');
   }*/
 
-  Future<int> update(SKUModel skuDetail) async {
+  Future<void> update(SKUModel skuDetail) async {
     var dbClient = await db;
-    return await dbClient.rawUpdate(
-        'UPDATE SKUDetail SET qty_act = ${skuDetail.qty_act}, reasson = ${skuDetail.reasson} '
-            'WHERE sch_name = ${skuDetail.sch_name} AND nama_toko = ${skuDetail.nama_toko} '
-            'AND no_doc = ${skuDetail.no_doc} AND driver_name = ${skuDetail.driver_name}'
+    return await dbClient.update(
+      'SKUDetail',
+      skuDetail.toMap(),
+      where: 'sch_name = ? AND id_toko = ? AND no_doc = ? AND nama_barang = ?',
+      whereArgs: [skuDetail.sch_name, skuDetail.id_toko, skuDetail.no_doc, skuDetail.nama_barang],
     );
   }
 

@@ -84,20 +84,22 @@ class _SKUReceive extends State<SKUReceive> {
     {
       skuDetail = await dbHelper.getSKU(scheduling, buktiDokumen);
     } else {
-      fetchDataSKU(scheduling, buktiDokumen);
-      for (var i in listSKU) {
-        SKUModel item = SKUModel(
-          sch_name: scheduling,
-          driver_name: i.driver_name,
-          id_toko: i.id_toko,
-          no_doc: buktiDokumen,
-          nama_barang : i.nama_barang,
-          qty_doc : i.qty_doc,
-          qty_act : i.qty_act,
-          reasson : i.reasson,
-        );
-        dbHelper.save(item);
-      }
+      setState(() {
+        fetchDataSKU(scheduling, buktiDokumen);
+        for (var i in listSKU) {
+          SKUModel item = SKUModel(
+            sch_name: scheduling.toString(),
+            driver_name: i.driver_name.toString(),
+            id_toko: i.id_toko.toString(),
+            no_doc: buktiDokumen.toString(),
+            nama_barang : i.nama_barang.toString(),
+            qty_doc : i.qty_doc.toInt(),
+            qty_act : i.qty_act.toInt(),
+            reasson : i.reasson.toString(),
+          );
+          dbHelper.save(item);
+        }
+      });
       skuDetail = await dbHelper.getSKU(scheduling, buktiDokumen);
     }
     loading = false;
@@ -109,19 +111,19 @@ class _SKUReceive extends State<SKUReceive> {
     setState(() {
       for (var i in skuDetail) {
         SKUModel item = SKUModel(
-          sch_name: scheduling,
-          driver_name: i.driver_name,
-          id_toko: i.id_toko,
-          no_doc: buktiDokumen,
-          nama_barang : i.nama_barang,
-          qty_doc : i.qty_doc,
-          qty_act : i.qty_act,
-          reasson : i.reasson,
+          sch_name: scheduling.toString(),
+          driver_name: i.driver_name.toString(),
+          id_toko: i.id_toko.toString(),
+          no_doc: buktiDokumen.toString(),
+          nama_barang : i.nama_barang.toString(),
+          qty_doc : i.qty_doc.toInt(),
+          qty_act : i.qty_act.toInt(),
+          reasson : i.reasson.toString(),
         );
         dbHelper.update(item);
       }
-      refreshList();
     });
+    skuDetail = await dbHelper.getSKU(scheduling, buktiDokumen);
   }
 
   @override
@@ -241,7 +243,7 @@ class _SKUReceive extends State<SKUReceive> {
                         keyboardType: TextInputType.number,
                         onChanged: (value){
                           setState(() {
-                            listsku.qty_act = double.parse(value);
+                            listsku.qty_act = int.parse(value);
                           });
                         },
                         style: TextStyle(
@@ -288,9 +290,10 @@ class _SKUReceive extends State<SKUReceive> {
       child: RaisedButton(
         onPressed: () {
           setState(() {
+            updateSeq();
             loading = true;
           });
-          updateSeq();
+          loading = false;
         },//since this is only a UI app
         child: Text('Save',
           style: TextStyle(
@@ -319,6 +322,7 @@ class _SKUReceive extends State<SKUReceive> {
           });
           String jsonDetail = jsonEncode(skuDetail);
           print(jsonDetail);
+          loading = false;
         },//since this is only a UI app
         child: Text('Upload',
           style: TextStyle(

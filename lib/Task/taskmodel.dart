@@ -75,8 +75,8 @@ class SKUModel {
   String nama_toko;
   String no_doc;
   String nama_barang;
-  double qty_doc;
-  double qty_act;
+  int qty_doc;
+  int qty_act;
   String reasson;
 
   SKUModel({this.nomor
@@ -101,13 +101,13 @@ class SKUModel {
       nama_toko: json['nama_toko'] == null ? '' : json['nama_toko'],
       no_doc: json['no_doc'] == null ? '' : json['no_doc'],
       nama_barang: json['nama_barang'] == null ? '' : json['nama_barang'],
-      qty_doc: json['qty_doc'] == null ? '' : json['qty_doc'],
-      qty_act: json['qty_act'] == null ? '' : json['qty_act'],
+      qty_doc: json['qty_doc'] == null ? 0 : json['qty_doc'],
+      qty_act: json['qty_act'] == null ? 0 : json['qty_act'],
       reasson: json['reasson'] == null ? '' : json['reasson'],
     );
   }
 
-  Map toMap() => {
+  Map<String, dynamic> toMap() => {
     "sch_name": sch_name,
     "driver_name": driver_name,
     "id_toko": id_toko,
