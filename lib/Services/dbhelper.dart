@@ -61,10 +61,7 @@ class DBHelper {
 
   Future<List<SKUModel>> getSKU(String scheduling, String buktiDokumen) async {
     var dbClient = await db;
-    List<Map> maps = await dbClient.query('SKUDetail',
-        columns: ['sch_name', 'driver_name', 'id_toko', 'no_doc', 'nama_barang', 'qty_doc', 'qty_act', 'reasson'],
-        where: 'sch_name = ? AND no_doc = ?',
-        whereArgs: [scheduling, buktiDokumen]);
+    List<Map> maps = await dbClient.rawQuery('SELECT * FROM SKUDetail WHERE sch_name = "$scheduling" AND no_doc = "$buktiDokumen"');
     List<SKUModel> skuDetail = [];
     if (maps.length > 0) {
       for (int i = 0; i < maps.length; i++) {
@@ -72,15 +69,6 @@ class DBHelper {
       }
     }
     return skuDetail;
-    /*final sql = '''SELECT * FROM SKUDetail
-    WHERE sch_name = ${scheduling} AND no_doc = ${buktiDokumen}''';
-    final data = await db.rawQuery(sql);
-    List<SKUModel> skuDetail = [];
-    for (final node in data) {
-      final todo = SKUModel.fromJson(node);
-      skuDetail.add(todo);
-    }
-    return skuDetail;*/
   }
 
   /*Future<int> delete(String schName) async {

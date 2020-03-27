@@ -10,6 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flushbar/flushbar.dart';
 
 class SKUReceive extends StatefulWidget {
   String nik;
@@ -122,8 +123,13 @@ class _SKUReceive extends State<SKUReceive> {
         );
         dbHelper.update(item);
       }
+      Flushbar(
+        icon: Icon(Icons.check_circle_outline, color: Colors.green),
+        message: 'Success!',
+        duration: Duration(seconds: 3),
+      )..show(context);
     });
-    skuDetail = await dbHelper.getSKU(scheduling, buktiDokumen);
+    refreshList();
   }
 
   @override
@@ -156,8 +162,8 @@ class _SKUReceive extends State<SKUReceive> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    btnUpload(),
-                    SizedBox(width: 10.0),
+                    /*btnUpload(),
+                    SizedBox(width: 10.0),*/
                     btnSave(),
                   ],
                 )
@@ -227,10 +233,13 @@ class _SKUReceive extends State<SKUReceive> {
               },*/
               cells: [
                 DataCell(
-                  Container(child: Text('${listsku.nama_barang}'), width: MediaQuery.of(context).size.width * 0.20),
+                  Container(child: Text('${listsku.nama_barang}')
+                      , width: MediaQuery.of(context).size.width * 0.25),
                 ),
                 DataCell(
-                  Container(child: Text('${listsku.qty_doc}'), width: MediaQuery.of(context).size.width * 0.15),
+                  Container(child: Text('${listsku.qty_doc}')
+                      , margin: EdgeInsets.only(left: 5.0)
+                      , width: MediaQuery.of(context).size.width * 0.15),
                 ),
                 DataCell(
                   Container(
@@ -259,22 +268,23 @@ class _SKUReceive extends State<SKUReceive> {
                 ),
                 DataCell(
                   Container(
-                      child: TextFormField(
-                        initialValue: listsku.reasson,
-                        onChanged: (value){
-                          setState(() {
-                            listsku.reasson = value;
-                          });
-                        },
-                        style: TextStyle(
-                          color: Colors.black,
-                        ),
-                        decoration: InputDecoration(
-                            hintText: 'Add a Remark',
-                            border: InputBorder.none
-                        ),
+                    child: TextFormField(
+                      maxLines: null,
+                      initialValue: listsku.reasson,
+                      onChanged: (value){
+                        setState(() {
+                          listsku.reasson = value;
+                        });
+                      },
+                      style: TextStyle(
+                        color: Colors.black,
                       ),
-                      width: MediaQuery.of(context).size.width * 0.30
+                      decoration: InputDecoration(
+                          hintText: 'Add a Remark',
+                          border: InputBorder.none
+                      ),
+                    ),
+                    width: MediaQuery.of(context).size.width * 0.25 ,
                   ),
                 ),
               ])
